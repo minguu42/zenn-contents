@@ -1,0 +1,17 @@
+{
+  "name": "zenn-contents",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "fmt": "prettier . --write",
+    "preview": "zenn preview",
+    "new:article": "zenn new:article --slug yyyymmdd-xxx",
+    "new:book": "zenn new:book"
+  },
+  "dependencies": {
+    "zenn-cli": "^0.1.144"
+  },
+  "devDependencies": {
+    "prettier": "3.0.0"
+  }
+}
