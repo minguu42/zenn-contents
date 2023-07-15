@@ -1,5 +1,5 @@
 ---
-title: "Docker で Go + MySQL の環境構築を行った"
+title: "DockerでGo+MySQLの環境構築を行った"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["docker", "go", "mysql"]
@@ -8,10 +8,10 @@ published: true
 
 ## はじめに
 
-この記事では, Docker（Docker Compose）を使って, Go と MySQL の実行環境を作成し, ローカルで Go アプリと MySQL を接続する方法を記述します.
+この記事では、Docker（Docker Compose）を使って、GoとMySQLの実行環境を作成し、ローカルでGoアプリとMySQLを接続する方法を記述します。
 
-この記事が他の人の参考になれば幸いです.
-また, この記事の内容に間違った記載がありましたら, 指摘してもらえるとありがたいです.
+この記事が他の人の参考になれば幸いです。
+また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
 
 ## 環境
 
@@ -20,10 +20,10 @@ published: true
 | macOS Big Sur | 11.4       |
 | Docker Engine | 20.10.7    |
 
-## 適当な Go アプリを作成し, 実行する
+## 適当なGoアプリを作成し、実行する
 
-以下のように単純な Go アプリを作成しました.
-この後に `.env`, `Dockerfile`, `docker-compose.yaml` ファイルなどを追加していきます.
+以下のように単純なGoアプリを作成しました。
+この後に`.env`、`Dockerfile`、`docker-compose.yaml`ファイルなどを追加していきます。
 
 ```bash:myappのディレクトリ構成
 myapp
@@ -33,8 +33,8 @@ myapp
 └── go.mod
 ```
 
-`main.go` は以下のように記述しました.
-`PORT` は環境変数として取得するようにしています.
+`main.go`は以下のように記述しました。
+`PORT`は環境変数として取得するようにしています。
 
 ```go:main.go
 package main
@@ -55,7 +55,7 @@ func main() {
 }
 ```
 
-`go.mod` は以下のように記述しました.
+`go.mod`は以下のように記述しました。
 
 ```mod:go.mod
 module github.com/minguu42/myapp
@@ -63,14 +63,15 @@ module github.com/minguu42/myapp
 go 1.16
 ```
 
-### `Dockerfile` を作成する
+### `Dockerfile`を作成する
 
-Go の実行環境の Docker イメージを定義する `Dockerfile` を作成します.
-公式の Go の Docker Hub に記述されている内容を参考に以下のように記述しました.
+Goの実行環境のDockerイメージを定義する`Dockerfile`を作成します。
+公式のGoのDocker Hubに記述されている内容を参考に以下のように記述しました。
 
-`go get -d -v ./...` コマンドで `go.mod` を更新し, Go アプリの依存モジュールをダウンロードしています. `-d` オプションで依存モジュールをインストールしないように指定し, `-v` オプションで詳細なデバッグを表示するように指定しています.
+`go get -d -v ./...`コマンドで`go.mod`を更新し、Goアプリの依存モジュールをダウンロードしています。
+`-d`オプションで依存モジュールをインストールしないように指定し、`-v`オプションで詳細なデバッグを表示するように指定しています。
 
-そして, Go アプリは `go run ./cmd/server` コマンドで実行しています.
+そして、Goアプリは`go run ./cmd/server`コマンドで実行しています。
 
 ```dockerfile
 FROM golang:1.16
@@ -83,20 +84,22 @@ RUN go get -d -v ./...
 CMD ["go", "run", "./cmd/server"]
 ```
 
-### `.env`, `docker-compose.yaml` を作成する
+### `.env`、`docker-compose.yaml`を作成する
 
-`.env`, `docker-compose.yaml` ファイルを作成し, Go アプリを実行できるようにします.
-環境によって異なる, Git などで管理したくない情報は `.env` ファイルで環境変数として管理します. そのため, Git などを使用している場合は `.env` ファイルは `.gitignore` などで無視するように設定してください.
+`.env`、`docker-compose.yaml`ファイルを作成し、Goアプリを実行できるようにします。
+環境によって異なる、Gitなどで管理したくない情報は`.env`ファイルで環境変数として管理します。
+そのため、Gitなどを使用している場合は`.env`ファイルは`.gitignore`などで無視するように設定してください。
 
-`.env` ファイルは以下のように記述しました.
+`.env`ファイルは以下のように記述しました。
 
 ```text:.env
 PORT=8080
 ```
 
-`docker-compose.yaml` ファイルは以下のように記述しました.
+`docker-compose.yaml`ファイルは以下のように記述しました。
 
-`.env` ファイルから環境変数 `PORT` を読み込んでいます. また, ポートフォワードを使用し, ローカルからも Docker コンテナにアクセスできるようにしています.
+`.env`ファイルから環境変数`PORT`を読み込んでいます。
+また、ポートフォワードを使用し、ローカルからもDockerコンテナにアクセスできるようにしています。
 
 ```yaml:docker-compose.yaml
 version: "3"
@@ -117,29 +120,29 @@ services:
       - ${PORT}:${PORT}
 ```
 
-### Docker Compose で Go アプリを実行する
+### Docker ComposeでGoアプリを実行する
 
-以下のコマンドで Docker Compose で Go アプリを実行します.
+以下のコマンドでDocker ComposeでGoアプリを実行します。
 
 ```bash:terminal
 docker compose up -d
 ```
 
-以下のコマンドで Go アプリが立ち上がっているのを確認します.
+以下のコマンドでGoアプリが立ち上がっているのを確認します。
 
 ```bash:terminal
 $ curl http://localhost:8080
 Hello, 世界！%
 ```
 
-## MySQL の実行環境を作成し, Go アプリと接続する
+## MySQLの実行環境を作成し、Goアプリと接続する
 
-### `.env`, `docker-compose.yaml` ファイルを変更する
+### `.env`、`docker-compose.yaml`ファイルを変更する
 
-`.env` ファイルを以下のように変更し, 環境変数を設定します.
-環境変数 `DRIVER`, `DSN` は Go アプリ側で使用する DB の接続情報です.
-環境変数 `MYSQL_ROOT_PASSWORD` などは MySQL イメージの初期化で使用する設定情報です.
-`DSN` の各値は `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` に対応するように気をつけてください.
+`.env`ファイルを以下のように変更し、環境変数を設定します。
+環境変数`DRIVER`、`DSN`はGoアプリ側で使用するDBの接続情報です。
+環境変数`MYSQL_ROOT_PASSWORD`などはMySQLイメージの初期化で使用する設定情報です。
+`DSN`の各値は`MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD`に対応するように気をつけてください。
 
 ```text:.env
 PORT=8080
@@ -152,8 +155,9 @@ MYSQL_USER=user
 MYSQL_PASSWORD=password
 ```
 
-`docker-compose.yaml` ファイルを以下のように変更し, MySQL の実行環境を設定します.
-MySQL のサービスでは名前付きボリュームを使用し, MySQL のデータをローカルのボリュームに保存しています. また, MySQL で初期化時に SQL ファイルなどを実行したい場合は, `./example.sql:/docker-entrypoint-initdb.d/example.sql` のように `volumes:` に追記し, Docker コンテナ側の `/docker-entrypoint-initdb.d` ディレクトリにマウントすると実行されます.
+`docker-compose.yaml`ファイルを以下のように変更し、MySQLの実行環境を設定します。
+MySQLのサービスでは名前付きボリュームを使用し、MySQLのデータをローカルのボリュームに保存しています。
+また、MySQLで初期化時にSQLファイルなどを実行したい場合は、`./example.sql:/docker-entrypoint-initdb.d/example.sql`のように`volumes:`に追記し、Dockerコンテナ側の`/docker-entrypoint-initdb.d`ディレクトリにマウントすると実行されます。
 
 ```yaml:docker-compose.yaml
 version: "3"
@@ -193,10 +197,10 @@ volumes:
     driver: local
 ```
 
-### Go アプリのソースコードの変更
+### Goアプリのソースコードの変更
 
-MySQL に接続できるように Go アプリのコードを変更します.
-プロジェクトディレクトリにデータベースに関する処理を行う `db.go` を以下のように作成しました.
+MySQLに接続できるようにGoアプリのコードを変更します。
+プロジェクトディレクトリにデータベースに関する処理を行う`db.go`を以下のように作成しました。
 
 ```go:db.gp
 package myapp
@@ -221,9 +225,9 @@ func CloseDB(db *sql.DB) {
 }
 ```
 
-`main.go` を以下のように変更しました.
-注意点として `sql.Open` メソッドではなく, `db.Ping` メソッドで DB との接続を確認できます.
-また, MySQL のコンテナが立ち上がり, サーバが起動するまでに `db.Ping` メソッドが実行されるとエラーが出るので, `db.Ping` メソッドはエラーが発生した場合は時間を空けて再度実行しています.
+`main.go`を以下のように変更しました。
+注意点として`sql.Open`メソッドではなく、`db.Ping`メソッドでDBとの接続を確認できます。
+また、MySQLのコンテナが立ち上がり、サーバが起動するまでに`db.Ping`メソッドが実行されるとエラーが出るので、`db.Ping`メソッドはエラーが発生した場合は時間を空けて再度実行しています。
 
 ```go:main.go
 package main
@@ -254,17 +258,17 @@ func main() {
 }
 ```
 
-### Go アプリと MySQL を実行する
+### GoアプリとMySQLを実行する
 
-以下の一連のコマンドを実行し, Go アプリと MySQL を実行します.
-`go mod tidy` はソースコードから依存モジュールを検出し, `go.mod` に反映するために実行します.
+以下の一連のコマンドを実行し、GoアプリとMySQLを実行します。
+`go mod tidy`はソースコードから依存モジュールを検出し、`go.mod`に反映するために実行します。
 
 ```bash:terminal
 go mod tidy
 docker compose up -d
 ```
 
-以下のコマンドで Go アプリが立ち上がっていることを確認できます.
+以下のコマンドでGoアプリが立ち上がっていることを確認できます。
 
 ```bash:terminal
 $ curl http://localhost:8080

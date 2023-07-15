@@ -1,5 +1,5 @@
 ---
-title: "Go のクエリビルダー goqu 入門"
+title: "Goのクエリビルダーgoqu入門"
 emoji: "✨"
 type: "tech" # tech: 技術記事, idea: アイデア
 topics: ["go", "goqu"]
@@ -8,25 +8,25 @@ published: true
 
 ## はじめに
 
-この記事では Go のクエリビルダーである goqu の基本的な使い方を紹介したいと思います。
+この記事ではGoのクエリビルダーであるgoquの基本的な使い方を紹介したいと思います。
 
 この記事が他の人の参考になったら幸いです。
 また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
 
-## goqu とは
+## goquとは
 
-[goqu](https://github.com/doug-martin/goqu) は表現力豊かな SQL ビルダーです。また、SQL を実行することもできます。 複数の SQL 方言に対応しており、複数のレコードをスキャンして構造体やプリミティブ値にマッピングする機能もあります。
+[goqu](https://github.com/doug-martin/goqu)は表現力豊かなSQLビルダーです。また、SQLを実行することもできます。複数のSQL方言に対応しており、複数のレコードをスキャンして構造体やプリミティブ値にマッピングする機能もあります。
 
-しかし、goqu は ORM として使用されることを意図したものではないので、アソシエーションやフックの機能はありません。 そのような機能が欲しい場合は [GORM](https://github.com/jinzhu/gorm) や [Hood](https://github.com/eaigner/hood) を使用することが推奨されています。
+しかし、goquはORMとして使用されることを意図したものではないので、アソシエーションやフックの機能はありません。そのような機能が欲しい場合は[GORM](https://github.com/jinzhu/gorm)や[Hood](https://github.com/eaigner/hood)を使用することが推奨されています。
 
-このように goqu は単純な機能に集中した SQL ビルダーです。 そのため私のように SQL を文字列として直接書くのは面倒臭いが、GORM などは機能が複雑で難しいと感じた人にピッタリな SQL ビルダーだと思います。
+このようにgoquは単純な機能に集中したSQLビルダーです。そのため私のようにSQLを文字列として直接書くのは面倒臭いが、GORMなどは機能が複雑で難しいと感じた人にピッタリなSQLビルダーだと思います。
 
-ここからは goqu を使って基本的な CRUD の SQL を生成する方法について紹介します。 記載するコードは `Dialect` を使用して MySQL 用の SQL を生成します。 直接構造体をスキャンしたり、SQL を実行したい場合は公式ドキュメントの [Database](http://doug-martin.github.io/goqu/docs/database.html) を参照して下さい。
+ここからはgoquを使って基本的なCRUDのSQLを生成する方法について紹介します。記載するコードは`Dialect`を使用してMySQL用のSQLを生成します。直接構造体をスキャンしたり、SQLを実行したい場合は公式ドキュメントの[Database](http://doug-martin.github.io/goqu/docs/database.html)を参照して下さい。
 
-## 共通 DSL
+## 共通DSL
 
-goqu はそれぞれ `InsertDataset`、`SelectDataset` など各データセット構造体から `.ToSQL` メソッドで SQL を生成するところはどんな SQL を生成する場合でも共通です。
-プリペアドステートメントを利用したい場合は `.Prepare` メソッドを利用します。
+goquはそれぞれ`InsertDataset`、`SelectDataset`など各データセット構造体から`.ToSQL`メソッドでSQLを生成するところはどんなSQLを生成する場合でも共通です。
+プリペアドステートメントを利用したい場合は`.Prepare`メソッドを利用します。
 
 ```go
 func main() {
@@ -47,19 +47,19 @@ func main() {
 }
 ```
 
-`ToSQL` メソッドの戻り値の `sql` は `string` 型の文字列であり、`args` は `interface{}` 型のスライスです。
+`ToSQL`メソッドの戻り値の`sql`は`string`型の文字列であり、`args`は`interface{}`型のスライスです。
 
-## INSERT 句を生成する
+## INSERT句を生成する
 
-goqu で INSERT 句を生成する方法は複数あります。 そのうちよく使用するものをここでは取り上げます。
-他の方法は [Inserting](https://doug-martin.github.io/goqu/docs/inserting.html) を参照して下さい。
+goquでINSERT句を生成する方法は複数あります。そのうちよく使用するものをここでは取り上げます。
+他の方法は[Inserting](https://doug-martin.github.io/goqu/docs/inserting.html)を参照して下さい。
 
-### `.Cols`、`.Vals` で INSERT 句を生成する
+### `.Cols`、`.Vals`でINSERT句を生成する
 
-`.Cols`、`.Vals` メソッドを使用して INSERT 句を生成する方法です。
+`.Cols`、`.Vals`メソッドを使用してINSERT句を生成する方法です。
 この方法はレコードの値を並べられるので、複数のレコードを挿入する際に便利です。
 
-`.Insert` メソッドの引数にはテーブル名を渡します。
+`.Insert`メソッドの引数にはテーブル名を渡します。
 
 ```go
 func main() {
@@ -73,9 +73,9 @@ func main() {
 }
 ```
 
-### `goqu.Record` で INSERT 句を生成する
+### `goqu.Record`でINSERT句を生成する
 
-`goqu.Record` を使用して INSERT 句を生成する方法です。
+`goqu.Record`を使用してINSERT句を生成する方法です。
 この方法はカラムと対応する値を分かりやすく書けます。
 
 ```go
@@ -90,15 +90,15 @@ func main() {
 }
 ```
 
-### 構造体で INSERT 句を生成する
+### 構造体でINSERT句を生成する
 
-構造体と `db` タグを使用して INSERT 句を生成する方法です。
-この方法は DB のテーブルに対応する構造体を使用する場合にとても便利です。
+構造体と`db`タグを使用してINSERT句を生成する方法です。
+この方法はDBのテーブルに対応する構造体を使用する場合にとても便利です。
 
-構造体はフィールドをエクスポートし、`db` タグで対応するテーブルのカラム名を指定します。
-`db` タグの値を `-` にするとフィールドがエクスポートされていても goqu から無視されます。
-`goqu` タグはその他のオプションを利用する場合に使用します。
-`skipinsert` は挿入時にそのフィールドを無視し、`defaultifempty` はそのフィールドの値がゼロ値であった場合に `DEFAULT` を使用します。
+構造体はフィールドをエクスポートし、`db`タグで対応するテーブルのカラム名を指定します。
+`db`タグの値を`-`にするとフィールドがエクスポートされていてもgoquから無視されます。
+`goqu`タグはその他のオプションを利用する場合に使用します。
+`skipinsert`は挿入時にそのフィールドを無視し、`defaultifempty`はそのフィールドの値がゼロ値であった場合に`DEFAULT`を使用します。
 
 ```go
 type User struct {
@@ -130,16 +130,16 @@ func main() {
 }
 ```
 
-## SELECT 句を生成する
+## SELECT句を生成する
 
-goqu で SELECT 句を生成するには `.From`、`.Select` メソッドを使用します。
-上記のメソッドに加えて `.Where`、`Limit`、`Offset` メソッドを使用することで目的に叶う SQL を生成します。
-また、複雑な SELECT 句も goqu は生成できますが、ここでは紹介しきれないので詳しくは [Selecting](https://doug-martin.github.io/goqu/docs/selecting.html) を参照して下さい。列を構造体にマッピングする `ScanStruct` なども先のドキュメントに記載されています。
+goquでSELECT句を生成するには`.From`、`.Select`メソッドを使用します。
+上記のメソッドに加えて`.Where`、`Limit`、`Offset`メソッドを使用することで目的に叶うSQLを生成します。
+また、複雑なSELECT句もgoquは生成できますが、ここでは紹介しきれないので詳しくは[Selecting](https://doug-martin.github.io/goqu/docs/selecting.html)を参照して下さい。列を構造体にマッピングする`ScanStruct`なども先のドキュメントに記載されています。
 
-基本的な SELECT 句は以下のようになります。
-`.From` メソッドの引数にはテーブル名を渡します。
+基本的なSELECT句は以下のようになります。
+`.From`メソッドの引数にはテーブル名を渡します。
 構造体のポインタを渡すことで構造体のフィールドを全て指定できます。
-ただし、`db` タグの値が `-` の場合は無視され、フィールドはアルファベット順に並ぶことに注意して下さい。
+ただし、`db`タグの値が`-`の場合は無視され、フィールドはアルファベット順に並ぶことに注意して下さい。
 
 ```go
 type User struct {
@@ -166,7 +166,7 @@ func main() {
 }
 ```
 
-また、`.Where` メソッドを重ねることもできます。
+また、`.Where`メソッドを重ねることもできます。
 
 ```go
 func main() {
@@ -180,14 +180,14 @@ func main() {
 }
 ```
 
-## Update 句を生成する
+## Update句を生成する
 
-goqu で Update 句を生成するには `.Update`、`.Set` メソッドを使用します。
-セットする値の指定には主に `goqu.Record` か構造体を使用します。
+goquでUpdate句を生成するには`.Update`、`.Set`メソッドを使用します。
+セットする値の指定には主に`goqu.Record`か構造体を使用します。
 
-`.Update` メソッドの引数にテーブル名を渡します。
-Insert 句を生成する場合と同様に構造体のフィールドに `db`、`goqu` タグを使用できます。
-`goqu` タグの `skipupdate` は Update 句の生成時にそのフィールド値を無視します。
+`.Update`メソッドの引数にテーブル名を渡します。
+Insert句を生成する場合と同様に構造体のフィールドに`db`、`goqu`タグを使用できます。
+`goqu`タグの`skipupdate`はUpdate句の生成時にそのフィールド値を無視します。
 
 ```go
 type User struct {
@@ -217,7 +217,7 @@ func main() {
 }
 ```
 
-また、`goqu.Record` は `map[string]interface{}` 型のエイリアスであるので以下のように扱えます。
+また、`goqu.Record`は`map[string]interface{}`型のエイリアスであるので以下のように扱えます。
 
 ```go
 func main() {
@@ -231,10 +231,10 @@ func main() {
 }
 ```
 
-## DELETE 句を生成する
+## DELETE句を生成する
 
-goqu で DELETE 句を生成するには `.Delete` メソッドを使用します。
-より詳しくは [Deleting](https://doug-martin.github.io/goqu/docs/deleting.html) を参照して下さい。
+goquでDELETE句を生成するには`.Delete`メソッドを使用します。
+より詳しくは[Deleting](https://doug-martin.github.io/goqu/docs/deleting.html)を参照して下さい。
 
 ```go
 func main() {

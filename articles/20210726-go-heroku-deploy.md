@@ -1,5 +1,5 @@
 ---
-title: "Heroku に Go アプリをデプロイした"
+title: "HerokuにGoアプリをデプロイした"
 emoji: "🎉"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["go", "heroku"]
@@ -8,16 +8,16 @@ published: true
 
 ## はじめに
 
-この記事では Heroku に Go アプリをデプロイする方法について書きます.
+この記事ではHerokuにGoアプリをデプロイする方法について書きます。
 
-この記事では以下を前提としています.
+この記事では以下を前提としています。
 
-- Heroku CLI をインストールし, ログインしている
-- Go アプリは Git で管理している
-- Go アプリの依存管理は Go Modules を使用している
+- Heroku CLIをインストールし、ログインしている
+- GoアプリはGitで管理している
+- Goアプリの依存管理はGo Modulesを使用している
 
-この記事が他の人の参考になれば幸いです.
-また, この記事の内容に間違った記載がありましたら, 指摘してもらえるとありがたいです.
+この記事が他の人の参考になれば幸いです。
+また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
 
 ## 環境
 
@@ -31,14 +31,14 @@ published: true
 
 ### 最初のデプロイ
 
-初回の Heroku へのデプロイは以下の手順で行います.
+初回のHerokuへのデプロイは以下の手順で行います。
 
-1. `go.mod` で Heroku で使用する Go のバージョンを指定する
-2. `Procfile` を作成する
-3. Heroku CLI でデプロイする
+1. `go.mod`でHerokuで使用するGoのバージョンを指定する
+2. `Procfile`を作成する
+3. Heroku CLIでデプロイする
 
-まず, `go.mod` ファイルに Heroku で使用する Go のバージョンを指定します.
-`// +heroku goVersion go1.16` のコメントで指定しています.
+まず、`go.mod`ファイルにHerokuで使用するGoのバージョンを指定します。
+`// +heroku goVersion go1.16`のコメントで指定しています。
 
 ```go:go.mod
 module github.com/minguu42/myapp
@@ -49,17 +49,17 @@ go 1.16
 ...
 ```
 
-次に, `Procfile` を作成します.
-`Procfile` では実行するバイナリを指定します.
-バイナリが一つの場合などでは `Procfile` を作成しなくても Heroku が自動でバイナリを選択しますが, ローカルでの実行時などには必要なので作成します.
-myapp は自分の main パッケージ名に合わせて変更してください.
+次に、`Procfile`を作成します。
+`Procfile`では実行するバイナリを指定します。
+バイナリが一つの場合などでは`Procfile`を作成しなくてもHerokuが自動でバイナリを選択しますが、ローカルでの実行時などには必要なので作成します。
+myappは自分のmainパッケージ名に合わせて変更してください。
 
 ```text:Procfile
 web: bin/myapp
 ```
 
-最後に以下の一連のコマンドでデプロイできます.
-Go アプリのビルドや実行などは Heroku 側で自動的に行ってくれます.
+最後に以下の一連のコマンドでデプロイできます。
+Goアプリのビルドや実行などはHeroku側で自動的に行ってくれます。
 
 ```bash:terminal
 # Heroku アプリを作成する
@@ -71,7 +71,7 @@ git push heroku main
 
 ### 以後のデプロイ
 
-初回のデプロイ後は以下のコマンドでデプロイできます.
+初回のデプロイ後は以下のコマンドでデプロイできます。
 
 ```bash:terminal
 git push heroku main
@@ -79,7 +79,7 @@ git push heroku main
 
 ## 環境変数
 
-Heroku 環境での環境変数は以下のコマンドで扱えます.
+Heroku環境での環境変数は以下のコマンドで扱えます。
 
 ### 環境変数を一覧表示
 
@@ -89,7 +89,7 @@ heroku config
 
 ### 環境変数の追加
 
-`KEY` と `VALUE` は適切な値に変更してください.
+`KEY`と`VALUE`は適切な値に変更してください。
 
 ```bash:terminal
 heroku config:set KEY=VALUE
@@ -103,20 +103,20 @@ heroku config:unset KEY
 
 ## データベース
 
-Heroku ではプラグインを使用し, データベースを扱えます.
-ここでは MySQL を扱う方法を見ていきます.
+Herokuではプラグインを使用し、データベースを扱えます。
+ここではMySQLを扱う方法を見ていきます。
 
-以下のコマンドで MySQL のプラグインを追加します.
+以下のコマンドでMySQLのプラグインを追加します。
 
 ```bash
 heroku addons:create jawsdb:kitefin
 ```
 
-コマンドの実行後は複数の環境変数が追加されます.
-Go アプリの DB と接続するコードで環境変数を読み込み, DB と接続するようにして下さい.
+コマンドの実行後は複数の環境変数が追加されます。
+GoアプリのDBと接続するコードで環境変数を読み込み、DBと接続するようにして下さい。
 
-実際にデータベースが立ち上がっているかは以下のコマンドで接続し, 確認できます.
-`user`, `password`, `host`, `database` は上記のコマンドで追加された環境変数から確認できます.
+実際にデータベースが立ち上がっているかは以下のコマンドで接続し、確認できます。
+`user`、`password`、`host`、`database`は上記のコマンドで追加された環境変数から確認できます。
 
 ```bash:terminal
 mysql -u <user> -p -h <host> -D <database>
@@ -124,21 +124,21 @@ mysql -u <user> -p -h <host> -D <database>
 
 ## main ブランチ以外のブランチでデプロイしたい
 
-実行に必要な秘密ファイルを GitHub に上げたくないが Heroku には上げたい場合など main ブランチ以外のブランチをデプロイしたい場合はあると思います.
-Heroku は main ブランチのみをビルドし, デプロイするのでそのままプッシュしてもデプロイできません.
-以下のコマンドで Heroku にプッシュしてデプロイできます.
+実行に必要な秘密ファイルをGitHubに上げたくないがHerokuには上げたい場合などmainブランチ以外のブランチをデプロイしたい場合はあると思います。
+Herokuはmainブランチのみをビルドし、デプロイするのでそのままプッシュしてもデプロイできません。
+以下のコマンドでHerokuにプッシュしてデプロイできます。
 
 ```bash:terminal
 git push heroku <branch name>:main
 ```
 
-## Heroku CLI の便利なコマンド
+## Heroku CLIの便利なコマンド
 
 ### ローカルで実行する
 
-ローカルでビルドし, `Procfile` に従って実行します.
-環境変数は `.env` ファイルを読み込みます.
-myapp は適宜変更して下さい.
+ローカルでビルドし、`Procfile`に従って実行します。
+環境変数は`.env`ファイルを読み込みます。
+myappは適宜変更して下さい。
 
 ```bash:terminal
 # Go アプリをビルドする
@@ -154,7 +154,7 @@ heroku local web
 heroku logs --tail
 ```
 
-### Heroku アプリの名前を変更する
+### Herokuアプリの名前を変更する
 
 ```bash:terminal
 heroku apps:rename <appName>

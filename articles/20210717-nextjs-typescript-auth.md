@@ -1,5 +1,5 @@
 ---
-title: "Next.js（TypeScript）で Firebase を利用し, Google ログインを実装する"
+title: "Next.js（TypeScript）でFirebaseを利用し、Googleログインを実装する"
 emoji: "🌟"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["typescript", "firebase", "nextjs"]
@@ -8,11 +8,11 @@ published: true
 
 ## はじめに
 
-この記事では, Firebase Authentication を使って TypeScript を使用した Next アプリに Google ログインを実装する方法を記述します.
-JavaScript を使用した Next アプリに Google ログインを実装する方法は[こちら](https://zenn.dev/minguu42/articles/20210705-nextjs-auth)に記述しています.
+この記事では、Firebase Authenticationを使ってTypeScriptを使用したNextアプリにGoogleログインを実装する方法を記述します。
+JavaScriptを使用したNextアプリにGoogleログインを実装する方法は[こちら](https://zenn.dev/minguu42/articles/20210705-nextjs-auth)に記述しています。
 
-この記事が他の人の参考になれば幸いです.
-また, この記事の内容に間違った記載がありましたら, 指摘してもらえるとありがたいです.
+この記事が他の人の参考になれば幸いです。
+また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
 
 ## 環境
 
@@ -24,50 +24,55 @@ JavaScript を使用した Next アプリに Google ログインを実装する�
 | React         | 17.0.2     |
 | Next.js       | 11.0.1     |
 
-## 適当な Next アプリの作成
+## 適当なNextアプリの作成
 
-以下のコマンドで `auth-example` という Next アプリを作成しました.
-このアプリに Google ログインを実装していきます.
+以下のコマンドで`auth-example`というNextアプリを作成しました。
+このアプリにGoogleログインを実装していきます。
 
 ```bash:terminal
 npx create-next-app --ts --use-npm auth-example
 ```
 
-## Firebase の設定
+## Firebaseの設定
 
-以下の流れで Firebase の設定を行っていきます.
+以下の流れでFirebaseの設定を行っていきます。
 
-1. Firebase プロジェクトの作成
-2. Authentication の有効化
-3. Google プロバイダの有効化
+1. Firebaseプロジェクトの作成
+2. Authenticationの有効化
+3. Googleプロバイダの有効化
 4. （任意）承認済みドメインの設定
 5. ウェブアプリの追加
 
-[Firebase console](https://console.firebase.google.com/) にアクセスし, Firebase プロジェクトを作成します. 適当な`プロジェクト名`を入力し, プロジェクトを作成します. `Google アナリティクス` の設定は任意です.
+[Firebase console](https://console.firebase.google.com/)にアクセスし、Firebaseプロジェクトを作成します。
+適当な`プロジェクト名`を入力し、プロジェクトを作成します。
+`Googleアナリティクス`の設定は任意です。
 
-プロジェクトの作成後, 左側のナビゲーションから Authentication のページに飛び, [始める]ボタンで Authentication を有効にします.
+プロジェクトの作成後、左側のナビゲーションからAuthenticationのページに飛び、[始める]ボタンでAuthenticationを有効にします。
 
-その後, Authentication の Sign-in method タブで `Google` プロバイダを有効にします. `プロジェクトの公開名`, `プロジェクトのサポートメール`は適当なものを設定し, 保存します.
+その後、AuthenticationのSign-in methodタブで`Google`プロバイダを有効にします。
+`プロジェクトの公開名`、`プロジェクトのサポートメール`は適当なものを設定し、保存します。
 
-また, Sign-in method タブのページ下部で`承認済みドメイン`の設定ができます.
-今回は変更しません.
+また、Sign-in methodタブのページ下部で`承認済みドメイン`の設定ができます。
+今回は変更しません。
 
-左側のナビゲーションからプロジェクトの概要に飛び, `</>` のボタンでウェブアプリを追加します. 適当な`アプリのニックネーム`を入力し, アプリを登録してください.
-その後, `Firebase SDK の追加` で表示されるソースコードは, Next アプリで使用するので, コピーして保存しておきます.
+左側のナビゲーションからプロジェクトの概要に飛び、`</>`のボタンでウェブアプリを追加します。
+適当な`アプリのニックネーム`を入力し、アプリを登録してください。
+その後、`Firebase SDKの追加`で表示されるソースコードは、Nextアプリで使用するので、コピーして保存しておきます。
 
-## Next アプリでの Google ログインの実装
+## NextアプリでのGoogleログインの実装
 
-以下の流れで Next アプリに Google ログインを実装します.
+以下の流れでNextアプリにGoogleログインを実装します。
 
-1. 環境変数ファイル `.env.local` の作成
-2. Firebase ライブラリのセットアップ
+1. 環境変数ファイル`.env.local`の作成
+2. Firebaseライブラリのセットアップ
 3. ログイン処理の実装
 
-### 環境変数ファイル `.env.local` の作成
+### 環境変数ファイル`.env.local`の作成
 
-プロジェクトディレクトリに`.env.local` ファイルを作成し, 環境変数を設定します.
-先ほどコピーしたソースコードの `firebaseConfig` 変数のプロパティ値を環境変数として読み込むために以下のように記述します.
-`NEXT_PUBLIC_` のプリフィックスはクライアントで動作する Next アプリが環境変数を読み込むために必要です. また, Google アナティクスの有効無効によって, 設定する環境変数の数が以下の場合と異なる可能性があります.
+プロジェクトディレクトリに`.env.local`ファイルを作成し、環境変数を設定します。
+先ほどコピーしたソースコードの`firebaseConfig`変数のプロパティ値を環境変数として読み込むために以下のように記述します。
+`NEXT_PUBLIC_`のプリフィックスはクライアントで動作するNextアプリが環境変数を読み込むために必要です。
+また、Googleアナティクスの有効無効によって、設定する環境変数の数が以下の場合と異なる可能性があります。
 
 ```text:.env.local
 NEXT_PUBLIC_FIREBASE_API_KEY=<apiKey>
@@ -78,19 +83,19 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<messagingSenderId>
 NEXT_PUBLIC_FIREBASE_APP_ID=<appId>
 ```
 
-### Firebase ライブラリのセットアップ
+### Firebaseライブラリのセットアップ
 
-以下のコマンドで firebase ライブラリをインストールします.
+以下のコマンドでfirebaseライブラリをインストールします。
 
 ```bash:terminal
 npm i firebase
 ```
 
-インストール後, 任意のファイル（この記事では `lib/firebase.ts`）で firebase ライブラリのセットアップを行います.
+インストール後、任意のファイル（この記事では`lib/firebase.ts`）でfirebaseライブラリのセットアップを行います。
 
-`lib/firebase.ts` は以下のように記述しました.
-環境変数から Firebase の設定情報を読み込み, firebase ライブラリを初期化しています.
-また, 再レンダリングなどの際に, 初期化が複数回行われないように if 文で条件分岐させています.
+`lib/firebase.ts`は以下のように記述しました。
+環境変数からFirebaseの設定情報を読み込み、firebaseライブラリを初期化しています。
+また、再レンダリングなどの際に、初期化が複数回行われないようにif文で条件分岐させています。
 
 ```typescript:lib/firebase.ts
 import firebase from "firebase/app";
@@ -115,23 +120,24 @@ export default firebase;
 
 ### ログイン処理の実装
 
-実際のログイン処理を実装します.
+実際のログイン処理を実装します。
 
-この記事では, ユーザの認証関連の情報を `useContext` を使用し, グローバルで扱います.
-そのため, `lib/AuthContext` に認証関連の情報を扱うコンテキストを, `pages/_app.js` にコンテキストを読み込む処理を, `pages/index.js` にログイン, ログアウト関数の呼び出しを記述します.
+この記事では、ユーザの認証関連の情報を`useContext`を使用し、グローバルで扱います。
+そのため、`lib/AuthContext`に認証関連の情報を扱うコンテキストを、`pages/_app.js`にコンテキストを読み込む処理を、`pages/index.js`にログイン、ログアウト関数の呼び出しを記述します。
 
-以下の流れで実装していきます.
+以下の流れで実装していきます。
 
-1. `lib/AuthContext.tsx` で `AuthContext` の作成
-2. `pages/_app.tsx` で `AuthContext` の読み込み
-3. `pages/index.tsx` で `AuthContext` の使用
+1. `lib/AuthContext.tsx`で`AuthContext`の作成
+2. `pages/_app.tsx`で`AuthContext`の読み込み
+3. `pages/index.tsx`で`AuthContext`の使用
 
-#### `lib/AuthContext.tsx` で `AuthContext` の作成
+#### `lib/AuthContext.tsx`で`AuthContext`の作成
 
-`lib/AuthContext.tsx` を作成し, 以下のように記述しました.
+`lib/AuthContext.tsx`を作成し、以下のように記述しました。
 
-`createContext` で ユーザ, ログインやログアウトを扱う関数を保持する `AuthContext` を作成しています. `AuthContext` はカスタム Hook `useAuth` を通して使用できます.
-`login` 関数の `auth.signInWithRedirect` 関数でリダイレクトでログインする方法を使用していますが, ポップアップを表示し, ログインする方法も存在します.
+`createContext`でユーザ、ログインやログアウトを扱う関数を保持する`AuthContext`を作成しています。
+`AuthContext`はカスタムHook`useAuth`を通して使用できます。
+`login`関数の`auth.signInWithRedirect`関数でリダイレクトでログインする方法を使用していますが、ポップアップを表示し、ログインする方法も存在します。
 
 ```tsx:lib/AuthContext.tsx
 import { createContext, useState, useEffect, useContext } from "react";
@@ -191,11 +197,11 @@ const AuthProvider = ({ children }: Props): JSX.Element => {
 export default AuthProvider;
 ```
 
-#### `pages/_app.tsx` で `AuthContext` の読み込み
+#### `pages/_app.tsx`で`AuthContext`の読み込み
 
-`pages/_app.tsx` を以下のように変更しました.
+`pages/_app.tsx`を以下のように変更しました。
 
-`<AuthProvider>` を `<Component>` の親コンポーネントにすることで全てのコンポーネントから `AuthContext` の情報にアクセスできるようにしています.
+`<AuthProvider>`を`<Component>`の親コンポーネントにすることで全てのコンポーネントから`AuthContext`の情報にアクセスできるようにしています。
 
 ```tsx:pages/_app.tsx
 import '../styles/globals.css'
@@ -214,12 +220,12 @@ export default MyApp
 
 ```
 
-#### `pages/index.tsx` で `AuthContext` の使用
+#### `pages/index.tsx`で`AuthContext`の使用
 
-`pages/index.tsx` を以下のように変更しました.
+`pages/index.tsx`を以下のように変更しました。
 
-これは `useAuth` を使って `AuthContext` を利用する一つの例です.
-`currentUser` の値でユーザがログインしているかどうかの判別ができます.
+これは`useAuth`を使って`AuthContext`を利用する一つの例です。
+`currentUser`の値でユーザがログインしているかどうかの判別ができます。
 
 ```tsx:pages/index.tsx
 import styles from '../styles/Home.module.css'

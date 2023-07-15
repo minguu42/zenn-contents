@@ -8,7 +8,7 @@ published: true
 
 ## はじめに
 
-この記事では CSS Modules でスタイリングを行なっている Next.js アプリにダークモードを実装する方法について書きます。この記事のコードは TypeScript で書いており、状態管理は Recoil で行っています。
+この記事ではCSS Modulesでスタイリングを行なっているNext.jsアプリにダークモードを実装する方法について書きます。この記事のコードはTypeScriptで書いており、状態管理はRecoilで行っています。
 
 この記事が他の人の参考になれば幸いです。
 また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
@@ -27,15 +27,15 @@ published: true
 
 この記事では以下の要件を満たすようなダークモードを実装します。
 
-- Recoil でテーマを管理し、ボタンのクリックで簡単にテーマを切り替えられる。
-- デフォルトでは `prefers-color-scheme` からユーザが OS などで設定しているテーマを取得し、適用する。
-- ユーザがテーマを切り替えた場合はそのテーマを local storage で記憶し、local storage にテーマが保存されている場合はそのテーマを適用する。
+- Recoilでテーマを管理し、ボタンのクリックで簡単にテーマを切り替えられる。
+- デフォルトでは`prefers-color-scheme`からユーザがOSなどで設定しているテーマを取得し、適用する。
+- ユーザがテーマを切り替えた場合はそのテーマをlocal storageで記憶し、local storageにテーマが保存されている場合はそのテーマを適用する。
 - フラッシュ（最初にデフォルトのテーマを表示した後に適用するテーマに切り替わること）を起こさず、最初から適用するテーマで表示されるようにする。
 
-実装方法としては JavaScript でテーマを扱う状態を持ち、CSS でテーマを識別するために HTML のルート要素 `html` に `data-theme` 属性を追加します。
+実装方法としてはJavaScriptでテーマを扱う状態を持ち、CSSでテーマを識別するためにHTMLのルート要素`html`に`data-theme`属性を追加します。
 
-そのため CSS Modules のスタイリングは以下のように行います。
-CSS 変数を使用する場合は以下のようにグローバル CSS `styles/globals.css` でそれぞれの CSS 変数を宣言し、適用する箇所に挿入します。
+そのためCSS Modulesのスタイリングは以下のように行います。
+CSS変数を使用する場合は以下のようにグローバルCSS`styles/globals.css`でそれぞれのCSS変数を宣言し、適用する箇所に挿入します。
 
 ```css:styles/globals.css
 :root[data-theme="light"] {
@@ -75,8 +75,8 @@ CSS 変数を使用する場合は以下のようにグローバル CSS `styles/
 
 ## テーマとテーマを管理する関数を定義する
 
-まず、テーマの状態 `themeState` を定義し、その状態を扱う関数を定義します。
-`useTheme` は React コンポーネントでテーマを扱うためのカスタムフックで、テーマ `theme` とテーマを切り替える関数 `toggleTheme` を返します。
+まず、テーマの状態`themeState`を定義し、その状態を扱う関数を定義します。
+`useTheme`はReactコンポーネントでテーマを扱うためのカスタムフックで、テーマ`theme`とテーマを切り替える関数`toggleTheme`を返します。
 
 ```jsx:lib/theme.ts
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
@@ -105,10 +105,10 @@ export const useTheme = () => {
 };
 ```
 
-## Theme コンポーネントを追加する
+## Themeコンポーネントを追加する
 
-最初にページを読み込む時に `html` 要素に `data-theme` 属性を設定し、JavaScript で読み込む必要があります。
-そのために `Theme.tsx` に以下のように `ThemeProvider` コンポーネントを定義します。
+最初にページを読み込む時に`html`要素に`data-theme`属性を設定し、JavaScriptで読み込む必要があります。
+そのために`Theme.tsx`に以下のように`ThemeProvider`コンポーネントを定義します。
 
 ```jsx:Theme.tsx
 import { useEffect } from "react";
@@ -142,13 +142,13 @@ const ThemeProvider = ({ children }: Props): JSX.Element => {
 export default ThemeProvider;
 ```
 
-`ThemeProvider` コンポーネントの `useEffect` はマウント後に `data-theme` の値を読み込み、テーマをセットします。
-`ThemeProvider` コンポーネントの `<script>` タグはフラッシュを防ぐために使用します。
-`<script>` タグに記述した JavaScript スクリプトの実行後に `body` 要素のコンテンツのマウントされるので最初から正しいテーマを適用できます。
-圧縮していない `<script>` タグの JavaScript スクリプトは以下のようになります。
-ローカルストレージにテーマがあったら適用し、なかったら `prefers-color-scheme` からテーマを取得し、`html` 要素の `data-theme` 属性に設定します。
+`ThemeProvider`コンポーネントの`useEffect`はマウント後に`data-theme`の値を読み込み、テーマをセットします。
+`ThemeProvider`コンポーネントの`<script>`タグはフラッシュを防ぐために使用します。
+`<script>`タグに記述したJavaScriptスクリプトの実行後に`body`要素のコンテンツのマウントされるので最初から正しいテーマを適用できます。
+圧縮していない`<script>`タグのJavaScriptスクリプトは以下のようになります。
+ローカルストレージにテーマがあったら適用し、なかったら`prefers-color-scheme`からテーマを取得し、`html`要素の`data-theme`属性に設定します。
 
-```jsx:圧縮していない <script> タグのスクリプト
+```jsx:圧縮していない<script>タグのスクリプト
 (function () {
   let theme;
   const storageTheme = window.localStorage.getItem("theme");
@@ -164,7 +164,7 @@ export default ThemeProvider;
 })();
 ```
 
-作成した `Theme` コンポーネントを `pages/_app.tsx` の `MyApp` コンポーネントの子要素に追加します。
+作成した`Theme`コンポーネントを`pages/_app.tsx`の`MyApp`コンポーネントの子要素に追加します。
 
 ```diff jsx:pages/_app.tsx
 import type { AppProps } from "next/app";
@@ -189,9 +189,9 @@ export default MyApp;
 
 ## ブラウザに現在のテーマを伝える
 
-`input[type="date"]` 要素のカレンダーなどブラウザで表示される UI もダークモードに対応させるためにブラウザに現在のテーマを伝えます。
+`input[type="date"]`要素のカレンダーなどブラウザで表示されるUIもダークモードに対応させるためにブラウザに現在のテーマを伝えます。
 
-`_document.tsx` に以下のように `<meta>` タグを追加します。
+`_document.tsx`に以下のように`<meta>`タグを追加します。
 
 ```diff jsx:pages/_document.tsx
 class MyDocument extends Document {
@@ -213,7 +213,7 @@ class MyDocument extends Document {
 }
 ```
 
-そして、`styles/globals.css` に以下のように追記します。
+そして、`styles/globals.css`に以下のように追記します。
 
 ```diff css:styles/globals.css
 :root[data-theme="light"] {

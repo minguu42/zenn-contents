@@ -1,5 +1,5 @@
 ---
-title: "Next.js アプリに Storybook を導入する"
+title: "Next.jsアプリにStorybookを導入する"
 emoji: "🐕"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["nextjs", "storybook"]
@@ -8,9 +8,9 @@ published: true
 
 ## はじめに
 
-この記事では Next.js アプリに Stobybook を導入する方法について書きます。
-CSS Modules を使用してスタイリングを行う既存の Next.js アプリに導入することを前提としており、主に [Get started with Storybook and Next.js](https://storybook.js.org/blog/get-started-with-storybook-and-next-js/) に従って進めていきます。
-Sass、Chakra UI などでスタイリングを行っている場合は別に設定が必要になります。別途[こちら](https://storybook.js.org/docs/react/configure/styling-and-css)を参照してください。
+この記事ではNext.jsアプリにStobybookを導入する方法について書きます。
+CSS Modulesを使用してスタイリングを行う既存のNext.jsアプリに導入することを前提としており、主に[Get started with Storybook and Next.js](https://storybook.js.org/blog/get-started-with-storybook-and-next-js/)に従って進めていきます。
+Sass、Chakra UIなどでスタイリングを行っている場合は別に設定が必要になります。別途[こちら](https://storybook.js.org/docs/react/configure/styling-and-css)を参照してください。
 
 この記事が他の人の参考になれば幸いです。
 また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
@@ -25,33 +25,33 @@ Sass、Chakra UI などでスタイリングを行っている場合は別に設
 | Next.js        | 12.0.7     |
 | Storybook      | 6.4.9      |
 
-## Storybook のセットアップ
+## Storybookのセットアップ
 
-以下のコマンドを実行し、Storybook と関連パッケージをインストールします。
-パフォーマンスと Next.js との一貫性のためビルダーとして Webpack 5 を使用します。
-コマンド実行中に `eslintPlugin` をインストールし、設定するか聞かれます。この自動設定は `.eslintrc` の拡張子が `json` の場合は対応していないので、本記事では `no` にし、後で設定します。
+以下のコマンドを実行し、Storybookと関連パッケージをインストールします。
+パフォーマンスとNext.jsとの一貫性のためビルダーとしてWebpack 5を使用します。
+コマンド実行中に`eslintPlugin`をインストールし、設定するか聞かれます。この自動設定は`.eslintrc`の拡張子が`json`の場合は対応していないので、本記事では`no`にし、後で設定します。
 
 ```bash:terminal
 npx sb init --builder webpack5
 ```
 
-上記のコマンド実行後、`npm run storybook` コマンドで Storybook を起動できます。
+上記のコマンド実行後、`npm run storybook`コマンドでStorybookを起動できます。
 
-## Storybook 環境へのグローバル CSS の適用
+## Storybook環境へのグローバルCSSの適用
 
-Storybook 環境でもグローバル CSS が適用されるために `.storybook/preview.js` に以下のようにグローバル CSS のインポート文を追加します。
+Storybook環境でもグローバルCSSが適用されるために`.storybook/preview.js`に以下のようにグローバルCSSのインポート文を追加します。
 
 ```js:.storybook/preview.js
 import "../styles/globals.css";
 ```
 
-## Storybook で next/image を扱うための設定の追加
+## Storybookでnext/imageを扱うための設定の追加
 
-`next/image` コンポーネントは Next.js によって自動的に最適化処理が行われます。
-しかし、Storybook は Next.js とは独立した環境を構築するため、そのままではうまく表示されません。
-そのため Storybook で next/image コンポーネントを適切に表示する設定を行います。
+`next/image`コンポーネントはNext.jsによって自動的に最適化処理が行われます。
+しかし、StorybookはNext.jsとは独立した環境を構築するため、そのままではうまく表示されません。
+そのためStorybookで`next/image`コンポーネントを適切に表示する設定を行います。
 
-まず、Next.js で画像を配置する `public` ディレクトリを Storybook で扱うために `.storybook/main.js` に以下の設定を追加します。
+まず、Next.jsで画像を配置する`public`ディレクトリをStorybookで扱うために`.storybook/main.js`に以下の設定を追加します。
 
 ```js:.storybook/main.js
 module.exports = {
@@ -61,7 +61,7 @@ module.exports = {
 
 ```
 
-そして、Storybook では最適化されていない next/image コンポーネントを使用するために `.storybook/preview.js` に以下の内容を追加します。
+そして、Storybookでは最適化されていない`next/image`コンポーネントを使用するために`.storybook/preview.js`に以下の内容を追加します。
 
 ```js:.storybook/preview.js
 import * as NextImage from "next/image";
@@ -80,9 +80,9 @@ Object.defineProperty(NextImage, 'default', {
 
 相対パスでインポートを行っている場合にこの設定は必要ないので読み飛ばしてください。
 
-ベース URL、モジュールパスエイリアスを使用する場合は Storybook に対応関係を伝えないといけません。
-`.storybook/main.js` に以下のように追加します。
-この記事では `src/components`、`src/lib`、`src/models`、`src/pages`、`src/styles` ディレクトリの対応関係を設定しています。
+ベースURL、モジュールパスエイリアスを使用する場合はStorybookに対応関係を伝えないといけません。
+`.storybook/main.js`に以下のように追加します。
+この記事では`src/components`、`src/lib`、`src/models`、`src/pages`、`src/styles`ディレクトリの対応関係を設定しています。
 
 ```js:.storybook/main.js
 const path = require("path");
@@ -108,17 +108,17 @@ module.exports = {
 };
 ```
 
-## Storybook に関する ESLint ルールの追加
+## Storybookに関するESLintルールの追加
 
-手動で Storybook の ESLint プラグイン `eslint-plugin-storybook` をインストールし、適用します。
-このプラグインは `.stories.*` もしくは `.story.*` の拡張子のファイルに対して Storybook のベストプラクティスルールを追加します。
+手動でStorybookのESLintプラグイン`eslint-plugin-storybook`をインストールし、適用します。
+このプラグインは`.stories.*`もしくは`.story.*`の拡張子のファイルに対してStorybookのベストプラクティスルールを追加します。
 以下のコマンドでインストールします。
 
 ```bash
 npm i -D eslint-plugin-storybook
 ```
 
-プラブインを適用するために `.eslint.json` を変更します。以下のように `extends` に `"plugin:storybook/recommended"` を追加してください。
+プラブインを適用するために`.eslint.json`を変更します。以下のように`extends`に`"plugin:storybook/recommended"`を追加してください。
 
 ```json
 {

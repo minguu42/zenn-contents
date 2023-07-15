@@ -1,5 +1,5 @@
 ---
-title: "Firebase SDK v9, Recoil で Next.js アプリの Google ログインを実装する"
+title: "Firebase SDK v9、RecoilでNext.jsアプリのGoogleログインを実装する"
 emoji: "📑"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["typescript", "firebase", "nextjs", "recoil"]
@@ -8,11 +8,13 @@ published: true
 
 ## はじめに
 
-この記事では TypeScript で書かれた Next アプリに Firebase JavaScript SDK v9 を利用して Google ログインを実装する方法について書きます. 認証するユーザは Recoil で管理します. Context API で管理する方法は[こちらの記事](https://zenn.dev/minguu42/articles/20210717-nextjs-typescript-auth.md)で書いています.
-また, 前述した記事に載っていますので, この記事では Firebase プロジェクトの作成, Google プロバイダの有効化などの詳しい手順は省略させて頂きます.
+この記事ではTypeScriptで書かれたNextアプリにFirebase JavaScript SDK v9を利用してGoogleログインを実装する方法について書きます。
+認証するユーザはRecoilで管理します。
+Context APIで管理する方法は[こちらの記事](https://zenn.dev/minguu42/articles/20210717-nextjs-typescript-auth.md)で書いています。
+また、前述した記事に載っていますので、この記事ではFirebaseプロジェクトの作成、Googleプロバイダの有効化などの詳しい手順は省略させて頂きます。
 
-この記事が他の人の参考になれば幸いです.
-また, この記事の内容に間違った記載がありましたら, 指摘してもらえるとありがたいです.
+この記事が他の人の参考になれば幸いです。
+また、この記事の内容に間違った記載がありましたら、指摘してもらえるとありがたいです。
 
 ## 環境
 
@@ -28,17 +30,18 @@ published: true
 
 ## 事前準備
 
-Next アプリに Google ログインを実装するコードを書いていく前に Firebase プロジェクト等を作る必要があります. 主に以下のことを事前に行う必要があります.
+NextアプリにGoogleログインを実装するコードを書いていく前にFirebaseプロジェクト等を作る必要があります。
+主に以下のことを事前に行う必要があります。
 
-- Firebase プロジェクトの作成
-- Authentication, Google プロバイダの有効化
-- Web アプリの追加とその設定情報のメモ
+- Firebaseプロジェクトの作成
+- Authentication、Googleプロバイダの有効化
+- Webアプリの追加とその設定情報のメモ
 
-詳しくは[こちらの記事](https://zenn.dev/minguu42/articles/20210717-nextjs-typescript-auth.md)で行なっていますので, 必要に応じて参照してください.
+詳しくは[こちらの記事](https://zenn.dev/minguu42/articles/20210717-nextjs-typescript-auth.md)で行なっていますので、必要に応じて参照してください。
 
 ## 環境変数ファイルを作成する
 
-Firebase の設定情報はコード上に記述し, バージョン管理したくないので環境変数ファイル `.env.local` を作成し, 事前準備で得た設定情報を記述しておきます.
+Firebaseの設定情報はコード上に記述し、バージョン管理したくないので環境変数ファイル`.env.local`を作成し、事前準備で得た設定情報を記述しておきます。
 
 ```bash:.env.local
 NEXT_PUBLIC_FIREBASE_API_KEY=<apiKey>
@@ -49,17 +52,17 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<messagingSenderId>
 NEXT_PUBLIC_FIREBASE_APP_ID=<appId>
 ```
 
-## firebase ライブラリのインストールとセットアップ
+## firebaseライブラリのインストールとセットアップ
 
-firebase ライブラリをインストールし, そのセットアップを行います.
+firebaseライブラリをインストールし、そのセットアップを行います。
 
 ```bash:terminal
 npm i firebase
 ```
 
-インストール後, 任意のファイル（この記事では `lib/firebase.ts`）で firebase ライブラリのセットアップを行います.
-環境変数ファイル `.env.local` から Firebase の設定情報を読み込み, firebase ライブラリの初期化をしています.
-また, `app` は他のファイルで使用するのでエクスポートしています.
+インストール後、任意のファイル（この記事では`lib/firebase.ts`）でfirebaseライブラリのセットアップを行います。
+環境変数ファイル`.env.local`からFirebaseの設定情報を読み込み、firebaseライブラリの初期化をしています。
+また、`app`は他のファイルで使用するのでエクスポートしています。
 
 ```typescript:lib/firebase.ts
 import { initializeApp } from "firebase/app";
@@ -78,9 +81,9 @@ export const app = initializeApp(firebaseConfig);
 
 参考：[Add Firebase to your JavaScript project](https://firebase.google.com/docs/web/setup)
 
-## ログイン, ログアウトを行う関数を定義する
+## ログイン、ログアウトを行う関数を定義する
 
-任意のファイル（この記事では `lib/auth.ts`）にログイン, ログアウトを行う関数を定義します. `lib/auth.ts` に以下のように記述しました.
+任意のファイル（この記事では`lib/auth.ts`）にログイン、ログアウトを行う関数を定義します。`lib/auth.ts`に以下のように記述しました。
 
 ```tsx:lib/auth.ts
 import { getAuth, signInWithRedirect, signOut, GoogleAuthProvider } from "firebase/auth";
@@ -99,12 +102,14 @@ export const logout = (): Promise<void> => {
 };
 ```
 
-`signInWithRedirect()` で Google ログイン用のページにリダイレクトし, Google ログインを行います. また, provider, auth のプロパティを変更することで言語などを変更, 設定できます. 詳しくは [Authenticate Using Google Sign-In with JavaScript](https://firebase.google.com/docs/auth/web/google-signin) など参照してください.
-`signOut()` でログアウトします.
+`signInWithRedirect()`でGoogleログイン用のページにリダイレクトし、Googleログインを行います。
+また、provider、authのプロパティを変更することで言語などを変更、設定できます。
+詳しくは[Authenticate Using Google Sign-In with JavaScript](https://firebase.google.com/docs/auth/web/google-signin)など参照してください。
+`signOut()`でログアウトします。
 
 ## ユーザ認証を管理する関数を定義する
 
-Recoil でユーザ認証を管理します. `lib/auth.ts` に以下のように追記しました.
+Recoilでユーザ認証を管理します。`lib/auth.ts`に以下のように追記しました。
 
 ```tsx:lib/auth.ts
 import { useEffect, useState } from "react";
@@ -159,14 +164,17 @@ export const useUser = (): UserState => {
 };
 ```
 
-`userState` は認証するユーザを保持する Recoil の状態です. ユーザがログインしている場合は `User`, ログインしていない場合は `null` になります. `useUser()` はその userState を他のコンポーネントで呼び出すための関数です.
-`useAuth()` がユーザ認証を監視するための関数です. `onAuthStateChanged()` メソッドはユーザ認証を監視し, 変更があったときに引数のコールバック関数を実行します. その関数内でユーザの状態を更新しています.
-`isLoading` は `onAuthStateChanged()` を実行中か確認するための状態です. この状態の値が true の時は `onAuthStateChanged()` でユーザを認証中です.
+`userState`は認証するユーザを保持するRecoilの状態です。
+ユーザがログインしている場合は`User`、ログインしていない場合は`null`になります。`useUser()`はそのuserStateを他のコンポーネントで呼び出すための関数です。
+`useAuth()`がユーザ認証を監視するための関数です。
+`onAuthStateChanged()`メソッドはユーザ認証を監視し、変更があったときに引数のコールバック関数を実行します。
+その関数内でユーザの状態を更新しています。
+`isLoading`は`onAuthStateChanged()`を実行中か確認するための状態です。この状態の値がtrueの時は`onAuthStateChanged()`でユーザを認証中です。
 
-## ログイン, ログアウト, ユーザ認証の管理を実装する
+## ログイン、ログアウト、ユーザ認証の管理を実装する
 
-上記で定義した関数を使用し, 実際にユーザ認証を実装します.
-まず, `pages/_app.tsx` に以下のように追記しました.
+上記で定義した関数を使用し、実際にユーザ認証を実装します。
+まず、`pages/_app.tsx`に以下のように追記しました。
 
 ```tsx:pages/_app.tsx
 import "../styles/globals.css";
@@ -198,10 +206,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 export default MyApp;
 ```
 
-`useAuth()` は `<RecoilRoot>` の子孫コンポーネントでしか使用できないので `<Auth>` コンポーネントを作成し, その中で使用しています. ユーザ認証中は`<p>Loading...</p>`のみが表示されます.
+`useAuth()`は`<RecoilRoot>`の子孫コンポーネントでしか使用できないので`<Auth>`コンポーネントを作成し、その中で使用しています。
+ユーザ認証中は`<p>Loading...</p>`のみが表示されます。
 
-ログイン, ログアウトは以下のように任意の場所で関数を呼び出し, 行ないます.
-また, `useUser()` も以下のように使用し, ユーザを取得できます.
+ログイン、ログアウトは以下のように任意の場所で関数を呼び出し、行ないます。
+また、`useUser()`も以下のように使用し、ユーザを取得できます。
 
 ```tsx:pages/index.tsx
 ...

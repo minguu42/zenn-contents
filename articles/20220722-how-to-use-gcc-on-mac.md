@@ -9,15 +9,15 @@ published: true
 ## はじめに
 
 こんにちは！[minguu42](https://twitter.com/minguu42)です。
-Mac では C のコンパイラとして標準で Clang が入っているのですが、Clang ではなく GCC を使いたい場合もあると思います。
-この記事では、GCC でコンパイルするための設定をメモとして残します。
+MacではCのコンパイラとして標準でClangが入っているのですが、ClangではなくGCCを使いたい場合もあると思います。
+この記事では、GCCでコンパイルするための設定をメモとして残します。
 
 この記事が他の人の参考になったら幸いです。
 また、この記事の内容に誤った記載がありましたら、指摘してもらえるとありがたいです。
 
-## GCC のインストール
+## GCCのインストール
 
-最初に Homebrew で GCC をインストールします。
+最初にHomebrewでGCCをインストールします。
 
 ```bash:terminal
 brew install gcc
@@ -25,7 +25,7 @@ brew install gcc
 
 ## パスの設定
 
-Homebrew で GCC をインストールしてもパスの設定を行わないと`gcc`コマンドや`g++`コマンドで Clang が呼び出されます。
+HomebrewでGCCをインストールしてもパスの設定を行わないと`gcc`コマンドや`g++`コマンドでClangが呼び出されます。
 
 ```bash:terminal
 $  gcc --version
@@ -41,9 +41,9 @@ Thread model: posix
 InstalledDir: /Library/Developer/CommandLineTools/usr/bin
 ```
 
-そのため、`/usr/local/bin/`に GCC のコマンドへのシンボリックリンクを作成し、`gcc`コマンドや`g++`コマンドで呼び出せるように変更します。
+そのため、`/usr/local/bin/`にGCCのコマンドへのシンボリックリンクを作成し、`gcc`コマンドや`g++`コマンドで呼び出せるように変更します。
 
-まず、Homebrew でインストールした GCC のバイナリはそれぞれ以下のように確認できます。
+まず、HomebrewでインストールしたGCCのバイナリはそれぞれ以下のように確認できます。
 
 ```bash:terminal
 $  ls /usr/local/bin | grep gcc
@@ -68,7 +68,7 @@ $ ln -s /usr/local/bin/gcc-11 /usr/local/bin/gcc
 $ ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
 ```
 
-一旦シェルを落として立ち上げ直すと、`gcc`コマンドと`g++`コマンドが GCC を参照するようになります！これで本記事でやりたかったことは完了です。
+一旦シェルを落として立ち上げ直すと、`gcc`コマンドと`g++`コマンドがGCCを参照するようになります！これで本記事でやりたかったことは完了です。
 
 ```bash:terminal
 $ exec $SHELL -l # シェルの再起動
@@ -86,7 +86,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-また、`gcc`コマンドや`g++`コマンドで呼び出されるコンパイラを Clang に戻したい場合はシンボリックリンクを削除すれば大丈夫です。
+また、`gcc`コマンドや`g++`コマンドで呼び出されるコンパイラをClangに戻したい場合はシンボリックリンクを削除すれば大丈夫です。
 
 ```bash:terminal
 $ unlink /usr/local/bin/gcc
